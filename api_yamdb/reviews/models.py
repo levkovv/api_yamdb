@@ -1,4 +1,5 @@
 from django.db import models
+from users.models import User
 
 
 class Category(models.Model):
@@ -24,7 +25,7 @@ class Title(models.Model):
 	genre = models.ManyToManyField(Genre, through='GenreTitle')
 	category = models.ForeignKey(Category, related_name='titles',
 		on_delete=models.SET_NULL, blank=True, null=True)
-	
+
 	def __str__(self):
 		return self.name
 
@@ -35,3 +36,44 @@ class GenreTitle(models.Model):
 
 	def __str__(self):
 		return f'{self.title_id} {self.genre_id}'
+
+
+class Review(models.Model):
+	title = models.ForeignKey(
+		Title,
+		related_name='reviews',
+		on_delete=models.CASCADE,
+	)
+	score = models.IntegerField()
+	pub_date = models.DateTimeField(
+		'date published',
+		db_index=True,
+		auto_now_add=True,
+	)
+	text = models.TextField()
+	author = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        verbose_name='Автор',
+        related_name='reviews'
+    )
+
+class Comments(models.Model):
+	review = models.ForeignKey(
+		Review,
+		related_name='comments',
+		on_delete=models.SET_NULL,
+	)
+	pub_date = models.DateTimeField(
+		'date published',
+		db_index=True,
+		auto_now_add=True,
+	)
+	text = models.TextField()
+	author = models.ForeignKey(
+		User,
+		on_delete=models.CASCADE,
+		verbose_name='Автор',
+		related_name='comments'
+	)
+
