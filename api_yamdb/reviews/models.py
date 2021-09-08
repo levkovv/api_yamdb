@@ -58,7 +58,7 @@ class Review(models.Model):
         related_name='reviews'
     )
 
-class Comments(models.Model):
+class Comment(models.Model):
 	review = models.ForeignKey(
 		Review,
 		related_name='comments',
