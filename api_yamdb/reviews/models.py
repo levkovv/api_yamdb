@@ -63,6 +63,7 @@ class Comments(models.Model):
 		Review,
 		related_name='comments',
 		on_delete=models.SET_NULL,
+		null=True
 	)
 	pub_date = models.DateTimeField(
 		'date published',
