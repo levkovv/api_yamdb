@@ -35,6 +35,10 @@ class TokenRefreshSerializer(serializers.Serializer):
 
     def validate(self, attrs):
         data = super().validate(attrs)
+        username = attrs.get('username', None)
+        if not User.objects.filter(username=username).exists():
+            raise serializers.ValidationError(
+                'Такое пользователя не существует')
         refresh = RefreshToken(attrs['confirmation_code'])
         data = {'token': str(refresh.access_token)}
         data['confirmation_code'] = str(refresh)
