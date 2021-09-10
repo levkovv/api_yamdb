@@ -54,8 +54,8 @@ class TitleViewSet(viewsets.ModelViewSet):
     def perform_create(self, serializer):
         category = get_object_or_404(Category,
             slug=serializer.initial_data.get('category'))
-        genre_slug = serializer.initial_data.get('genre')
         serializer.save(category=category)
+        genre_slug = serializer.initial_data.get('genre')
         title_id = get_object_or_404(Title,
             name=serializer.initial_data.get('name'))
         for slug in genre_slug:
