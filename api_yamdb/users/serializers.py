@@ -38,8 +38,34 @@ class TokenRefreshSerializer(serializers.Serializer):
         username = attrs.get('username', None)
         if not User.objects.filter(username=username).exists():
             raise serializers.ValidationError(
-                'Такое пользователя не существует')
+                'Такого пользователя не существует')
         refresh = RefreshToken(attrs['confirmation_code'])
         data = {'token': str(refresh.access_token)}
         data['confirmation_code'] = str(refresh)
         return data
+
+
+class UserSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = User
+        fields = '__all__'
+        optional_fields = ['bio', 'role', 'first_name', 'last_name']
+        #read_only_fields = ('role',)
+
+    def validate(self, args):
+        email = args.get('email', None)
+        username = args.get('username', None)
+        if User.objects.filter(email=email).exists():
+            raise serializers.ValidationError(
+                'Такая электронная почта уже существует')
+        if User.objects.filter(username=username).exists():
+            raise serializers.ValidationError(
+                'Такое имя пользователя уже существует')
+        if username == 'me':
+            raise serializers.ValidationError(
+                'Использовать имя "me" в качестве username запрещено.')
+        return super().validate(args)
+
+    def create(self, validated_data):
+        return User.objects.create(**validated_data)
