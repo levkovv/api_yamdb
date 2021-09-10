@@ -18,12 +18,12 @@ class CreateListDeleteViewSet(mixins.CreateModelMixin,
 
 
 class TitleFilter(FilterSet):
-	category = CharFilter(field_name='category__slug', lookup_expr='exact')
-	genre = CharFilter(field_name='genre__slug', lookup_expr='exact')
+    category = CharFilter(field_name='category__slug', lookup_expr='exact')
+    genre = CharFilter(field_name='genre__slug', lookup_expr='exact')
 
-	class Meta:
-		model = Title
-		fields = ('name', 'year', 'genre', 'category')
+    class Meta:
+        model = Title
+        fields = ('name', 'year', 'genre', 'category')
 
 
 class CategoryViewSet(CreateListDeleteViewSet):
@@ -32,8 +32,7 @@ class CategoryViewSet(CreateListDeleteViewSet):
     lookup_field = 'slug'
     filter_backends = (filters.SearchFilter,)
     search_fields = ('name',)
-    permission_classes =
-	(IsAdminOrReadOnly,)
+    permission_classes = (IsAdminOrReadOnly,)
 
 
 class GenreViewSet(CreateListDeleteViewSet):
@@ -42,8 +41,7 @@ class GenreViewSet(CreateListDeleteViewSet):
     lookup_field = 'slug'
     filter_backends = (filters.SearchFilter,)
     search_fields = ('name',)
-    permission_classes =
-	(IsAdminOrReadOnly,)
+    permission_classes = (IsAdminOrReadOnly,)
 
 
 class TitleViewSet(viewsets.ModelViewSet):
@@ -51,40 +49,40 @@ class TitleViewSet(viewsets.ModelViewSet):
     serializer_class = TitleSerializer
     filter_backends = (DjangoFilterBackend,)
     filterset_class = TitleFilter
-    permission_classes =(IsAdminOrReadOnly,)
+    permission_classes = (IsAdminOrReadOnly,)
 
     def perform_create(self, serializer):
         category = get_object_or_404(Category,
-            slug=serializer.initial_data.get('category'))
+                                     slug=serializer.initial_data.get('category'))
         genre_slug = serializer.initial_data.get('genre')
         serializer.save(category=category)
         title_id = get_object_or_404(Title,
-            name=serializer.initial_data.get('name'))
+                                     name=serializer.initial_data.get('name'))
         for slug in genre_slug:
             GenreTitle.objects.create(
                 genre_id=get_object_or_404(Genre, slug=slug),
                 title_id=title_id
-                )
+            )
 
 
 class ReviewViewSet(viewsets.ModelViewSet):
-	serializer_class = ReviewSerializer
+    serializer_class = ReviewSerializer
 
-	def get_queryset(self):
-		title = get_object_or_404(
-			Title,
-			id=self.kwargs.get('id')
-		)
-		return title.comments.all()
+    def get_queryset(self):
+        title = get_object_or_404(
+            Title,
+            id=self.kwargs.get('id')
+        )
+        return title.comments.all()
+
 
 class CommentViewSet(viewsets.ModelViewSet):
-	serializer_class = CommentSerializer
+    serializer_class = CommentSerializer
 
-	def get_queryset(self):
-		review = get_object_or_404(
-			Review,
-			title_id=self.kwargs.get('id'),
-			id=self.kwargs.get('review_id')
-		)
-		return review.comments.all()
-
+    def get_queryset(self):
+        review = get_object_or_404(
+            Review,
+            title_id=self.kwargs.get('id'),
+            id=self.kwargs.get('review_id')
+        )
+        return review.comments.all()

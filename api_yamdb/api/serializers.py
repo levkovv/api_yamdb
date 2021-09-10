@@ -6,50 +6,42 @@ from reviews.models import Comment, Category, Genre, Title, Review
 
 
 class CategorySerializer(serializers.ModelSerializer):
-
-	class Meta:
-		model = Category
-		fields = ('name', 'slug')
+    class Meta:
+        model = Category
+        fields = ('name', 'slug')
 
 
 class GenreSerializer(serializers.ModelSerializer):
-
-	class Meta:
-		model = Genre
-		fields = ('name', 'slug')
+    class Meta:
+        model = Genre
+        fields = ('name', 'slug')
 
 
 class TitleSerializer(serializers.ModelSerializer):
     rating = serializers.SerializerMethodField()
     genre = GenreSerializer(many=True, read_only=True)
     category = serializers.SlugRelatedField(slug_field='slug',
-        read_only=True)
+                                            read_only=True)
 
-	class Meta:
-		model = Title
-		fields = ('id', 'name', 'year', 'rating', 'description', 'genre', 'category')
+    class Meta:
+        model = Title
+        fields = ('id', 'name', 'year', 'rating', 'description', 'genre', 'category')
 
-	def get_rating(self, obj): # Здесь нужно будет высчитывать rating из score в БД
-		return 100
+    def get_rating(self, obj):  # Здесь нужно будет высчитывать rating из score в БД
+        return 100
 
-
-class ReviewSerializer(serializers.ModelSerializer):
-	author = SlugRelatedField(slug_field='username', read_only=True)
-
-	class Meta:
-		fields = ('id', 'text', 'author', 'score', 'pub_date')
-		model = Review
 
 class ReviewSerializer(serializers.ModelSerializer):
-	author = SlugRelatedField(slug_field='username', read_only=True)
+    author = SlugRelatedField(slug_field='username', read_only=True)
 
-	class Meta:
-		fields = ('id', 'text', 'author', 'score', 'pub_date')
-		model = Review
+    class Meta:
+        fields = ('id', 'text', 'author', 'score', 'pub_date')
+        model = Review
+
 
 class CommentSerializer(serializers.ModelSerializer):
-	author = SlugRelatedField(slug_field='username', read_only=True)
+    author = SlugRelatedField(slug_field='username', read_only=True)
 
-	class Meta:
-		fields = '__all__'
-		model = Comment
+    class Meta:
+        fields = '__all__'
+        model = Comment
