@@ -74,7 +74,7 @@ class ReviewViewSet(viewsets.ModelViewSet):
             Title,
             id=self.kwargs.get('id')
         )
-        return title.comments.all()
+        return title.reviews.all()
 
 
 class CommentViewSet(viewsets.ModelViewSet):

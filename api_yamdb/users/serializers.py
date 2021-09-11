@@ -49,7 +49,8 @@ class UserSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = '__all__'
+        fields = ['username', 'email', 'bio',
+                  'role', 'first_name', 'last_name']
         optional_fields = ['bio', 'role', 'first_name', 'last_name']
         #read_only_fields = ('role',)
 
@@ -66,6 +67,3 @@ class UserSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError(
                 'Использовать имя "me" в качестве username запрещено.')
         return super().validate(args)
-
-    def create(self, validated_data):
-        return User.objects.create(**validated_data)
