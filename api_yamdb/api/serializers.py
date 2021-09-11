@@ -29,7 +29,10 @@ class TitleGetSerializer(serializers.ModelSerializer):
     def get_rating(self, obj):  # Здесь нужно будет высчитывать rating из score в БД
         title = Title.objects.get(pk=obj.id)
         rating = title.reviews.all().aggregate(Avg('score'))
+        if rating['score__avg'] is None:
+            return None
         return round(rating['score__avg'], 2)
+        
 
 
 class TitlePostSerializer(serializers.ModelSerializer):
