@@ -17,12 +17,9 @@ class GenreSerializer(serializers.ModelSerializer):
         fields = ('name', 'slug')
 
 
-class TitleSerializer(serializers.ModelSerializer):
+class TitleGetSerializer(serializers.ModelSerializer):
     rating = serializers.SerializerMethodField()
     genre = GenreSerializer(many=True, read_only=True)
-    # genre = serializers.SlugRelatedField(queryset=Genre.objects.all(), slug_field='slug', many=True)
-    #category = serializers.SlugRelatedField(slug_field='slug',
-    #    queryset=Category.objects.all())
     category = CategorySerializer(read_only=True)
     
     class Meta:
@@ -31,6 +28,17 @@ class TitleSerializer(serializers.ModelSerializer):
 
     def get_rating(self, obj):  # Здесь нужно будет высчитывать rating из score в БД
         return 100
+
+
+class TitlePostSerializer(serializers.ModelSerializer):
+    genre = serializers.SlugRelatedField(
+        slug_field='slug', many=True, queryset=Genre.objects.all())
+    category = serializers.SlugRelatedField(slug_field='slug',
+        queryset=Category.objects.all())
+    
+    class Meta:
+        model = Title
+        fields = ('id', 'name', 'year', 'description', 'genre', 'category')
 
 
 
