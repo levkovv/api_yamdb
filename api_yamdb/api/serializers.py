@@ -1,5 +1,5 @@
+from django.db.models import Avg
 from rest_framework import serializers
-
 from rest_framework.relations import SlugRelatedField
 
 from reviews.models import Comment, Category, Genre, Title, Review
@@ -27,7 +27,9 @@ class TitleGetSerializer(serializers.ModelSerializer):
         fields = ('id', 'name', 'year', 'rating', 'description', 'genre', 'category')
 
     def get_rating(self, obj):  # Здесь нужно будет высчитывать rating из score в БД
-        return 100
+        title = Title.objects.get(pk=obj.id)
+        rating = title.reviews.all().aggregate(Avg('score'))
+        return round(rating['score__avg'], 2)
 
 
 class TitlePostSerializer(serializers.ModelSerializer):
