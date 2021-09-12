@@ -58,6 +58,15 @@ class Review(models.Model):
         related_name='reviews'
     )
 
+	class Meta:
+		constraints = [
+			models.UniqueConstraint(
+				fields=['title', 'author'],
+				name='title_author'
+			)
+		]
+
+
 class Comment(models.Model):
 	review = models.ForeignKey(
 		Review,
