@@ -17,12 +17,12 @@ router.register(r'genres', GenreViewSet)
 router.register(r'users', AdminAPiViews)
 router.register(r'users/me', ReceivingChangingMyself, basename='myself')
 router.register(
-    r'titles/(?P<id>[\d]+)/reviews',
+    r'titles/(?P<title_id>[\d]+)/reviews',
     ReviewViewSet,
     basename='review'
 )
 router.register(
-    r'titles/(?P<id>[\d]+)/reviews/(?P<review_id>[\d]+)/comments',
+    r'titles/(?P<title_id>[\d]+)/reviews/(?P<review_id>[\d]+)/comments',
     CommentViewSet,
     basename='comment'
 )
