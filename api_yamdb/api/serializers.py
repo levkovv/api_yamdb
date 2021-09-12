@@ -1,5 +1,5 @@
+from django.db.models import Avg
 from rest_framework import serializers
-
 from rest_framework.relations import SlugRelatedField
 
 from reviews.models import Comment, Category, Genre, Title, Review
@@ -17,12 +17,9 @@ class GenreSerializer(serializers.ModelSerializer):
         fields = ('name', 'slug')
 
 
-class TitleSerializer(serializers.ModelSerializer):
+class TitleGetSerializer(serializers.ModelSerializer):
     rating = serializers.SerializerMethodField()
     genre = GenreSerializer(many=True, read_only=True)
-    # genre = serializers.SlugRelatedField(queryset=Genre.objects.all(), slug_field='slug', many=True)
-    #category = serializers.SlugRelatedField(slug_field='slug',
-    #    queryset=Category.objects.all())
     category = CategorySerializer(read_only=True)
     
     class Meta:
@@ -30,7 +27,23 @@ class TitleSerializer(serializers.ModelSerializer):
         fields = ('id', 'name', 'year', 'rating', 'description', 'genre', 'category')
 
     def get_rating(self, obj):  # Здесь нужно будет высчитывать rating из score в БД
-        return 100
+        title = Title.objects.get(pk=obj.id)
+        rating = title.reviews.all().aggregate(Avg('score'))
+        if rating['score__avg'] is None:
+            return None
+        return round(rating['score__avg'], 2)
+        
+
+
+class TitlePostSerializer(serializers.ModelSerializer):
+    genre = serializers.SlugRelatedField(
+        slug_field='slug', many=True, queryset=Genre.objects.all())
+    category = serializers.SlugRelatedField(slug_field='slug',
+        queryset=Category.objects.all())
+    
+    class Meta:
+        model = Title
+        fields = ('id', 'name', 'year', 'description', 'genre', 'category')
 
 
 
