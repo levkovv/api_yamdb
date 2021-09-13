@@ -1,15 +1,14 @@
 from django.core.mail import send_mail
-from rest_framework import status, permissions, viewsets, filters, mixins
+from rest_framework import filters, mixins, permissions, status, viewsets
 from rest_framework.generics import get_object_or_404
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework_simplejwt.tokens import RefreshToken
 
-from .serializers import (
-    RegisterUserSerializer, TokenRefreshSerializer,
-    UserSerializer)
 from .models import User
 from .permissions import IsAdminPermission
+from .serializers import (RegisterUserSerializer, TokenRefreshSerializer,
+                          UserSerializer)
 
 
 class CreateUser(APIView):

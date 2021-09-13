@@ -1,13 +1,13 @@
-from rest_framework import viewsets, mixins, filters, permissions
-from django_filters import FilterSet, CharFilter
+from django_filters import CharFilter, FilterSet
 from django_filters.rest_framework import DjangoFilterBackend
+from rest_framework import filters, mixins, permissions, viewsets
 from rest_framework.generics import get_object_or_404
+from reviews.models import Category, Genre, Review, Title
 
-from .serializers import (TitleGetSerializer, TitlePostSerializer,
-                          GenreSerializer, CategorySerializer,
-                          ReviewSerializer, CommentSerializer)
 from .permissions import IsAdminOrReadOnly, IsAuthorOrStaffOrReadOnly
-from reviews.models import Review, Title, Genre, Category
+from .serializers import (CategorySerializer, CommentSerializer,
+                          GenreSerializer, ReviewSerializer,
+                          TitleGetSerializer, TitlePostSerializer)
 
 
 class CreateListDeleteViewSet(mixins.CreateModelMixin,
