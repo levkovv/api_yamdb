@@ -1,5 +1,6 @@
 from django.core.mail import send_mail
 from rest_framework import filters, mixins, permissions, status, viewsets
+from rest_framework.decorators import action
 from rest_framework.generics import get_object_or_404
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -51,14 +52,17 @@ class AdminAPiViews(viewsets.ModelViewSet):
     filter_backends = (filters.SearchFilter,)
     search_fields = ('=username',)
 
-
-class ReceivingChangingMyself(
-    mixins.RetrieveModelMixin,
-    mixins.UpdateModelMixin,
-    viewsets.GenericViewSet
-):
-    serializer_class = UserSerializer
-    permission_classes = [permissions.IsAuthenticated]
-
-    def get_queryset(self):
-        return self.request.user
+    @action(
+        detail=False,
+        methods=['get', 'patch'],
+        permission_classes=(permissions.IsAuthenticated,)
+    )
+    def me(self, request):
+        if request.method == 'GET':
+            serializer = UserSerializer(request.user)
+            return Response(serializer.data)
+        serializer = UserSerializer(request.user, request.data,
+                                    partial=True)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(serializer.data, status=status.HTTP_200_OK)

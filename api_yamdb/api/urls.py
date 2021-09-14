@@ -1,17 +1,18 @@
 from django.urls import include, path
 from rest_framework.routers import DefaultRouter
 
-from users.views import (AdminAPiViews, CreateUser, ReceivingChangingMyself,
+from users.views import (AdminAPiViews, CreateUser,
                          TokenObtain)
 from .views import (CategoryViewSet, CommentViewSet, GenreViewSet,
                     ReviewViewSet, TitleViewSet)
 
+
 router = DefaultRouter()
+# router.register(r'users/me', ReceivingChangingMyself, basename='myself')
+router.register(r'users', AdminAPiViews)
 router.register(r'titles', TitleViewSet)
 router.register(r'categories', CategoryViewSet)
 router.register(r'genres', GenreViewSet)
-router.register(r'users', AdminAPiViews)
-router.register(r'users/me', ReceivingChangingMyself, basename='myself')
 router.register(
     r'titles/(?P<title_id>[\d]+)/reviews',
     ReviewViewSet,
