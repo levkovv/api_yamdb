@@ -1,4 +1,6 @@
 import json
+
+from django.contrib.auth.tokens import default_token_generator
 from django.core.mail import send_mail
 from django.http import JsonResponse
 from rest_framework import filters, permissions, status, viewsets
@@ -45,6 +47,8 @@ class TokenObtain(APIView):
         user = get_object_or_404(User, username=username)
         if not user:
             return Response(status=status.HTTP_404_NOT_FOUND)
+        if not default_token_generator.check_token(user, code):
+            return Response(status=status.HTTP_400_BAD_REQUEST)
         serializer = TokenRefreshSerializer(data=request.data)
         if serializer.is_valid():
             return Response(serializer.data, status=status.HTTP_200_OK)
