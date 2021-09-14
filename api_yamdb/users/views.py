@@ -1,5 +1,6 @@
 import json
 from django.core.mail import send_mail
+from django.http import JsonResponse
 from rest_framework import filters, permissions, status, viewsets
 from rest_framework.decorators import action
 from rest_framework.generics import get_object_or_404
@@ -37,9 +38,12 @@ class TokenObtain(APIView):
     permission_classes = [permissions.AllowAny]
 
     def post(self, request):
-        try:
-            User.objects.get(username=request.data.get('username'))
-        except User.DoesNotExist:
+        username = request.data.get('username')
+        code = request.data.get('confirmation_code')
+        if not username or not code:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+        user = get_object_or_404(User, username=username)
+        if not user:
             return Response(status=status.HTTP_404_NOT_FOUND)
         serializer = TokenRefreshSerializer(data=request.data)
         if serializer.is_valid():

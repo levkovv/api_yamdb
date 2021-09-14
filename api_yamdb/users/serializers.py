@@ -39,7 +39,7 @@ class TokenRefreshSerializer(serializers.Serializer):
         if not User.objects.filter(username=username).exists():
             raise serializers.ValidationError(
                 'Такого пользователя не существует')
-        refresh = RefreshToken(attrs['confirmation_code'])
+        refresh = RefreshToken(attrs.get('confirmation_code'))
         data = {'token': str(refresh.access_token)}
         data['confirmation_code'] = str(refresh)
         return data
