@@ -1,5 +1,6 @@
+import json
 from django.core.mail import send_mail
-from rest_framework import filters, mixins, permissions, status, viewsets
+from rest_framework import filters, permissions, status, viewsets
 from rest_framework.decorators import action
 from rest_framework.generics import get_object_or_404
 from rest_framework.response import Response
@@ -36,8 +37,9 @@ class TokenObtain(APIView):
     permission_classes = [permissions.AllowAny]
 
     def post(self, request):
-        username = request.data['username']
-        if User.objects.filter(username=username):
+        try:
+            User.objects.get(username=request.data.get('username'))
+        except User.DoesNotExist:
             return Response(status=status.HTTP_404_NOT_FOUND)
         serializer = TokenRefreshSerializer(data=request.data)
         if serializer.is_valid():
@@ -48,14 +50,15 @@ class TokenObtain(APIView):
 class AdminAPiViews(viewsets.ModelViewSet):
     queryset = User.objects.all()
     serializer_class = UserSerializer
-    permission_classes = [IsAdminPermission]
+    lookup_field = 'username'
+    permission_classes = (IsAdminPermission,)
     filter_backends = (filters.SearchFilter,)
     search_fields = ('=username',)
 
     @action(
         detail=False,
         methods=['get', 'patch'],
-        permission_classes=(permissions.IsAuthenticated,)
+        permission_classes=[permissions.IsAuthenticated]
     )
     def me(self, request):
         if request.method == 'GET':
@@ -64,5 +67,10 @@ class AdminAPiViews(viewsets.ModelViewSet):
         serializer = UserSerializer(request.user, request.data,
                                     partial=True)
         serializer.is_valid(raise_exception=True)
+        user = User.objects.get(username=request.user)
+        if (serializer.validated_data.get('role')
+                and serializer.validated_data['role'] != user.role):
+            if request.user.role != 'admin':
+                serializer.validated_data['role'] = user.role
         serializer.save()
         return Response(serializer.data, status=status.HTTP_200_OK)

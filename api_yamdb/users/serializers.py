@@ -52,7 +52,6 @@ class UserSerializer(serializers.ModelSerializer):
         fields = ['username', 'email', 'bio',
                   'role', 'first_name', 'last_name']
         optional_fields = ['bio', 'role', 'first_name', 'last_name']
-        # read_only_fields = ('role',)
 
     def validate(self, args):
         email = args.get('email', None)
