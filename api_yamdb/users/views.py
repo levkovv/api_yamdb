@@ -1,8 +1,5 @@
-import json
-
 from django.contrib.auth.tokens import default_token_generator
 from django.core.mail import send_mail
-from django.http import JsonResponse
 from rest_framework import filters, permissions, status, viewsets
 from rest_framework.decorators import action
 from rest_framework.generics import get_object_or_404
