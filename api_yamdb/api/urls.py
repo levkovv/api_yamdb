@@ -8,7 +8,6 @@ from .views import (CategoryViewSet, CommentViewSet, GenreViewSet,
 
 
 router = DefaultRouter()
-# router.register(r'users/me', ReceivingChangingMyself, basename='myself')
 router.register(r'users', AdminAPiViews)
 router.register(r'titles', TitleViewSet)
 router.register(r'categories', CategoryViewSet)

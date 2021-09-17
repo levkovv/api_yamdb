@@ -1,4 +1,3 @@
-from django.db.models import Avg
 from rest_framework import serializers
 from rest_framework.relations import SlugRelatedField
 
@@ -18,7 +17,7 @@ class GenreSerializer(serializers.ModelSerializer):
 
 
 class TitleGetSerializer(serializers.ModelSerializer):
-    rating = serializers.SerializerMethodField()
+    rating = serializers.IntegerField()
     genre = GenreSerializer(many=True, read_only=True)
     category = CategorySerializer(read_only=True)
 
@@ -26,13 +25,6 @@ class TitleGetSerializer(serializers.ModelSerializer):
         model = Title
         fields = ('id', 'name', 'year', 'rating',
                   'description', 'genre', 'category')
-
-    def get_rating(self, obj):
-        title = Title.objects.get(pk=obj.id)
-        rating = title.reviews.all().aggregate(Avg('score'))
-        if rating['score__avg'] is None:
-            return None
-        return round(rating['score__avg'], 2)
 
 
 class TitlePostSerializer(serializers.ModelSerializer):

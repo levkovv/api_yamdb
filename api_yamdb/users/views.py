@@ -14,7 +14,7 @@ from .serializers import (RegisterUserSerializer, TokenRefreshSerializer,
 
 
 class CreateUser(APIView):
-    permission_classes = [permissions.AllowAny]
+    permission_classes = (permissions.AllowAny,)
 
     def post(self, request):
         serializer = RegisterUserSerializer(data=request.data)
@@ -34,7 +34,7 @@ class CreateUser(APIView):
 
 
 class TokenObtain(APIView):
-    permission_classes = [permissions.AllowAny]
+    permission_classes = (permissions.AllowAny,)
 
     def post(self, request):
         username = request.data.get('username')
@@ -62,8 +62,8 @@ class AdminAPiViews(viewsets.ModelViewSet):
 
     @action(
         detail=False,
-        methods=['get', 'patch'],
-        permission_classes=[permissions.IsAuthenticated]
+        methods=('get', 'patch'),
+        permission_classes=(permissions.IsAuthenticated,)
     )
     def me(self, request):
         if request.method == 'GET':
