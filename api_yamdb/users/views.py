@@ -7,7 +7,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework_simplejwt.tokens import RefreshToken
 
-from .models import User
+from .models import User, UserRoles
 from .permissions import IsAdminPermission
 from .serializers import (RegisterUserSerializer, TokenRefreshSerializer,
                           UserSerializer)
@@ -75,7 +75,7 @@ class AdminAPiViews(viewsets.ModelViewSet):
         user = User.objects.get(username=request.user)
         if (serializer.validated_data.get('role')
                 and serializer.validated_data['role'] != user.role):
-            if request.user.role != 'admin':
+            if request.user.role != UserRoles.ADMIN:
                 serializer.validated_data['role'] = user.role
         serializer.save()
         return Response(serializer.data, status=status.HTTP_200_OK)
